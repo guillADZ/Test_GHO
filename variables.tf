@@ -1,5 +1,5 @@
 variable "name_env" {
-    type = string
+  type = string
 }
 
 variable "app_network_var" {
@@ -27,29 +27,14 @@ variable "app_set_var" {
   default     = "app-set_"
 }
 
-variable "appstore_var" {
-  description = "appstore environment is"
-  default     = "storagetestssssss"
-}
-
-variable "data_var" {
-  description = "data environment is"
-  default     = "data"
-}
-
 variable "vm_extension1_var" {
   description = "appvm-extension environment is"
-  default     = "appvm-extension_"
+  default     = "appvm-extension"
 }
 
 variable "app_nsg_var" {
   description = "app-nsg environment is"
   default     = "app-nsg_"
-}
-
-variable "load_ip_var" {
-  description = "load-ip environment is"
-  default     = "load-ip_"
 }
 
 variable "app_balancer_var" {

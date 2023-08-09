@@ -13,11 +13,11 @@ provider "azurerm" {
 
 locals {
   resource_group="app-grp"
-  location="North Europe"
+  location="North Europe"  
 }
 
 resource "azurerm_resource_group" "app_grp"{
-  name= var.name_env
+  name=var.name_env
   location=local.location
 }
 
@@ -35,12 +35,13 @@ resource "azurerm_subnet" "SubnetA" {
   name                 = "${var.SubnetA_var}${var.name_env}"
   resource_group_name  = azurerm_resource_group.app_grp.name
   virtual_network_name = azurerm_virtual_network.app_network.name
-  address_prefixes     = ["10.0.0.0/24"]
+  address_prefixes     = ["10.0.1.0/24"]
   depends_on = [
     azurerm_virtual_network.app_network
   ]
 }
 
+// This interface is for appvm1
 resource "azurerm_network_interface" "app_interface1" {
   name                = "${var.app_interface1_var}${var.name_env}"
   location            = azurerm_resource_group.app_grp.location
@@ -58,6 +59,7 @@ resource "azurerm_network_interface" "app_interface1" {
   ]
 }
 
+// This interface is for appvm2
 resource "azurerm_network_interface" "app_interface2" {
   name                = "${var.app_interface2_var}${var.name_env}"
   location            = azurerm_resource_group.app_grp.location
@@ -75,6 +77,7 @@ resource "azurerm_network_interface" "app_interface2" {
   ]
 }
 
+// This is the resource for appvm1
 resource "azurerm_windows_virtual_machine" "app_vm1" {
   name                = "appvm1${var.name_env}"
   resource_group_name = azurerm_resource_group.app_grp.name
@@ -105,6 +108,7 @@ resource "azurerm_windows_virtual_machine" "app_vm1" {
   ]
 }
 
+// This is the resource for appvm2
 resource "azurerm_windows_virtual_machine" "app_vm2" {
   name                = "appvm2${var.name_env}"
   resource_group_name = azurerm_resource_group.app_grp.name
@@ -135,6 +139,7 @@ resource "azurerm_windows_virtual_machine" "app_vm2" {
   ]
 }
 
+
 resource "azurerm_availability_set" "app_set" {
   name                = "${var.app_set_var}${var.name_env}"
   location            = azurerm_resource_group.app_grp.location
@@ -147,7 +152,7 @@ resource "azurerm_availability_set" "app_set" {
 }
 
 resource "azurerm_storage_account" "appstore" {
-  name                     = "${var.appstore_var}${var.name_env}"
+  name                     = "storageaccountsevran"
   resource_group_name      = azurerm_resource_group.app_grp.name
   location                 = azurerm_resource_group.app_grp.location
   account_tier             = "Standard"
@@ -156,25 +161,29 @@ resource "azurerm_storage_account" "appstore" {
 }
 
 resource "azurerm_storage_container" "data" {
-  name                  = "${var.data_var}${var.name_env}"
-  storage_account_name  = "${var.appstore_var}${var.name_env}"
+  name                  = "data"
+  storage_account_name  = "storageaccountsevran"
   container_access_type = "blob"
   depends_on=[
     azurerm_storage_account.appstore
     ]
 }
 
+# Here we are uploading our IIS Configuration script as a blob
+# to the Azure storage account
+
 resource "azurerm_storage_blob" "IIS_config" {
   name                   = "IIS_Config.ps1"
-  storage_account_name   = "${var.appstore_var}${var.name_env}"
-  storage_container_name = "${var.data_var}${var.name_env}"
+  storage_account_name   = "storageaccountsevran"
+  storage_container_name = "data"
   type                   = "Block"
   source                 = "IIS_Config.ps1"
    depends_on=[azurerm_storage_container.data]
 }
 
+// This is the extension for appvm1
 resource "azurerm_virtual_machine_extension" "vm_extension1" {
-  name                 = "${var.vm_extension1_var}${var.name_env}"
+  name                 = "appvm-extension"
   virtual_machine_id   = azurerm_windows_virtual_machine.app_vm1.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
@@ -190,8 +199,9 @@ resource "azurerm_virtual_machine_extension" "vm_extension1" {
 SETTINGS
 }
 
+// This is the extension for appvm2
 resource "azurerm_virtual_machine_extension" "vm_extension2" {
-  name                 = "${var.vm_extension1_var}${var.name_env}"
+  name                 = "appvm-extension"
   virtual_machine_id   = azurerm_windows_virtual_machine.app_vm2.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
@@ -213,6 +223,7 @@ resource "azurerm_network_security_group" "app_nsg" {
   location            = azurerm_resource_group.app_grp.location
   resource_group_name = azurerm_resource_group.app_grp.name
 
+# We are creating a rule to allow traffic on port 80
   security_rule {
     name                       = "Allow_HTTP"
     priority                   = 200
@@ -234,8 +245,10 @@ resource "azurerm_subnet_network_security_group_association" "nsg_association" {
   ]
 }
 
+// Lets create the Load balancer
+
 resource "azurerm_public_ip" "load_ip" {
-  name                = "${var.load_ip_var}${var.name_env}"
+  name                = "load-ip"
   location            = azurerm_resource_group.app_grp.location
   resource_group_name = azurerm_resource_group.app_grp.name
   allocation_method   = "Static"
@@ -258,6 +271,7 @@ resource "azurerm_lb" "app_balancer" {
   ]
 }
 
+// Here we are defining the backend pool
 resource "azurerm_lb_backend_address_pool" "PoolA" {
   loadbalancer_id = azurerm_lb.app_balancer.id
   name            = "${var.PoolA_var}${var.name_env}"
@@ -286,6 +300,8 @@ resource "azurerm_lb_backend_address_pool_address" "appvm2_address" {
   ]
 }
 
+
+// Here we are defining the Health Probe
 resource "azurerm_lb_probe" "ProbeA" {
   resource_group_name = azurerm_resource_group.app_grp.name
   loadbalancer_id     = azurerm_lb.app_balancer.id
@@ -297,6 +313,7 @@ resource "azurerm_lb_probe" "ProbeA" {
   ]
 }
 
+// Here we are defining the Load Balancing Rule
 resource "azurerm_lb_rule" "RuleA" {
   resource_group_name            = azurerm_resource_group.app_grp.name
   loadbalancer_id                = azurerm_lb.app_balancer.id
