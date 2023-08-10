@@ -27,9 +27,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: terraform-version
-      uses: dflook/terraform-version@v1.29.1
-
     - name: 'Terraform Format'
       uses: hashicorp/terraform-github-actions@master
       with:
