@@ -33,25 +33,25 @@ jobs:
       with:
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'fmt'
-        tf _actions_working_dir: "./terraform"
+        tf_actions_working_dir: "./terraform"
 
     - name: 'Terraform init'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'init'
-        tf _actions_working_dir: "./terraform"
+        tf_actions_working_dir: "./terraform"
 
     - name: 'Terraform validate'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'validate'
-        tf _actions_working_dir: "./terraform"
+        tf_actions_working_dir: "./terraform"
 
     - name: 'Terraform apply'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'apply'
-        tf _actions_working_dir: "./terraform"
+        tf_actions_working_dir: "./terraform"
