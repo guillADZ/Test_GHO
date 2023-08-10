@@ -1,7 +1,8 @@
 name: Terraform Plan
 
 # configure to run on merges to 'main' branch
-branch
+branches:
+  - main
 on:
   push:
     branches: [ main ]
