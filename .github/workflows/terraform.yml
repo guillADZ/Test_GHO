@@ -18,8 +18,8 @@ jobs:
     environment: dev
 
     defaults:
-      run: echo Terraform >> $GITHUB_STATE
-        shell: bash >> $GITHUB_OUTPUT
+      run:
+        shell: bash
     
     steps:
 
