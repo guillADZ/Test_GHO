@@ -53,13 +53,7 @@ jobs:
     # Generates an execution plan for Terraform
     # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
     - name: Terraform Plan
-      id: tf-plan
-      run: |
-        export exitcode=0
-        terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
-        echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
-        
-  
+      run: terraform plan
     # Save plan to artifacts  
     - name: Publish Terraform Plan
       uses: actions/upload-artifact@v3
