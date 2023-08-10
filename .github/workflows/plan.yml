@@ -39,4 +39,3 @@ jobs:
         branch: 'terraform-plan'
         base: 'main'
         token: ${{ secrets.GITHUB_TOKEN }}
-

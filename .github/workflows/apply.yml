@@ -29,3 +29,4 @@ jobs:
     # from the terraform.tfplan file in the branch
     - name: Terraform Apply
       run: terraform apply "terraform.tfplan"
+
