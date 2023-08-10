@@ -1,36 +1,57 @@
-# This is a basic workflow to help you get started with Actions
+name: 'Terraform'
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  terraform:
+    name : 'Terraform'
+    env :
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_VALUE_SECRET}}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUB}}
+      ARM_TENANT_ID: {{ secrets.AZURE_DIRECTORY_ID}}
     runs-on: ubuntu-latest
+    environment: dev
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    defaults:
+      run:
+        shell: bash
+    
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: checkout
+      uses: actions/checkout@v2
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: 'Terraform Format'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 2.92.0
+        tf_actions_subcommand: 'fmt'
+        tf _actions_working_dir: "./terraform"
+
+    - name: 'Terraform init'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 2.92.0
+        tf_actions_subcommand: 'init'
+        tf _actions_working_dir: "./terraform"
+
+    - name: 'Terraform validate'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 2.92.0
+        tf_actions_subcommand: 'validate'
+        tf _actions_working_dir: "./terraform"
+
+    - name: 'Terraform apply'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 2.92.0
+        tf_actions_subcommand: 'apply'
+        tf _actions_working_dir: "./terraform"
