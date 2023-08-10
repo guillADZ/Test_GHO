@@ -28,6 +28,9 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
+    - run: ls -la
+      working-directory: ${{ github.workspace }}/tmp
+
     - name: 'Terraform format'
       uses: hashicorp/terraform-github-actions@master
       with:
