@@ -16,10 +16,6 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID}}
     runs-on: ubuntu-latest
     environment: dev
-
-    defaults:
-      run:
-        shell: bash
     
     steps:
 
