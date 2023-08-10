@@ -30,7 +30,6 @@ inputs:
 
 branding:
   icon: 'coffee'
-
 runs:
   using: "composite"
 
