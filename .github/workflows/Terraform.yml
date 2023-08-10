@@ -28,9 +28,13 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
+
+    - name: Open Web Client Directory
+      working-directory: /github/workspace
+      run: |
+        ls -la
+
     - name: 'Terraform format'
-    - run: ls -la
-      working-directory: ${{ github.workspace }}/tmp
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 2.92.0
