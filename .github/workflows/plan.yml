@@ -42,36 +42,3 @@ jobs:
         base: 'main'
         token: ${{ secrets.GITHUB_TOKEN }}
 
-
-name: Terraform Apply
-
-# configure manual trigger for GitHub Action
-on:
-  workflow_dispatch:
-    branches: [ terraform-plan ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    # be sure to authenticate with cloud provider
-    - name: Login to Microsoft Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-
-    - name: Terraform Init
-      run: terraform init
-
-    # apply previously generated Terraform Plan
-    # from the terraform.tfplan file in the branch
-    - name: Terraform Apply
-      run: terraform apply "terraform.tfplan"
-
