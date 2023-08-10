@@ -15,7 +15,7 @@ jobs:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_VALUE_SECRET}}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUB}}
-      ARM_TENANT_ID: {{ secrets.AZURE_DIRECTORY_ID}}
+      ARM_TENANT_ID: ${{ secrets.AZURE_DIRECTORY_ID}}
     runs-on: ubuntu-latest
     environment: dev
 
