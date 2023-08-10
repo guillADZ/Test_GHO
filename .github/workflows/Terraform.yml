@@ -28,18 +28,12 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
-
-    - name: Open Web Client Directory
-      working-directory: /github/workspace
-      run: |
-        ls -la
-
     - name: 'Terraform format'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'fmt'
-        tf_actions_working_dir: "./terraform.exe"
+        tf_actions_working_dir: ".github/workspace/./terraform.exe"
 
     - name: 'Terraform init'
       uses: hashicorp/terraform-github-actions@master
