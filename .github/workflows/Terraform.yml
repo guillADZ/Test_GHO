@@ -31,9 +31,10 @@ jobs:
     - name: 'Terraform Format'
       uses: hashicorp/terraform-github-actions@master
       with:
+        args: ls -l
         tf_actions_version: 2.92.0
         tf_actions_subcommand: 'fmt'
-        tf_actions_working_dir: "./terraform.exe"
+        tf_actions_working_dir: "./terraform"
 
     - name: 'Terraform init'
       uses: hashicorp/terraform-github-actions@master
