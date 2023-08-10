@@ -60,11 +60,11 @@ jobs:
 
         echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
         
-        if [ $exitcode -eq 0 ]; then
+        if [ $exitcode -eq 1 ]; then
           echo Terraform Plan Failed!
           exit 1
         else 
-          exit 1
+          exit 0
         fi
   
     # Save plan to artifacts  
