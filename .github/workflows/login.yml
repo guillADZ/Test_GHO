@@ -1,21 +1,19 @@
-# File: .github/workflows/workflow.yml
+on: 
+    workflow_dispatch:
 
-on: [push]
-
-name: AzurePowerShellLoginSample
+name: AzureLoginSample
 
 jobs:
 
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     
-    - name: Login via Az module
-      uses: azure/login@v1
+    - uses: azure/login@v1
       with:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
-        enable-AzPSSession: true 
-     
-     - run: |
-        Get-AzVM -ResourceGroupName "ResourceGroup11"
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - run: |
+        az webapp list --query "[?state=='Running']"
+
         
