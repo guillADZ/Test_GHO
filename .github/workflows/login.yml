@@ -1,25 +1,21 @@
-name: Run Azure Login with OpenID Connect and PowerShell
+# File: .github/workflows/workflow.yml
+
 on: [push]
 
-permissions:
-      id-token: write
-      contents: read
-      
-jobs: 
-  Windows-latest:
-      runs-on: windows-latest
-      steps:
-        - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-          uses: azure/login@v1
-          with:
-            client-id: ${{ secrets.AZURE_AD_CLIENT_ID }}
-            tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
-            enable-AzPSSession: true
+name: AzurePowerShellLoginSample
 
-        - name: 'Get resource group with PowerShell action'
-          uses: azure/powershell@v1
-          with:
-             inlineScript: |
-               Get-AzResourceGroup
-             azPSVersion: "latest"
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+        enable-AzPSSession: true 
+     
+     - run: |
+        Get-AzVM -ResourceGroupName "ResourceGroup11"
+        
