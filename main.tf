@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = "2.92.0"
     }
   }
@@ -12,20 +12,20 @@ provider "azurerm" {
 }
 
 locals {
-  resource_group="app-grp"
-  location="North Europe"  
+  resource_group = "app-grp"
+  location       = "North Europe"
 }
 
-resource "azurerm_resource_group" "app_grp"{
-  name=var.name_env
-  location=local.location
+resource "azurerm_resource_group" "app_grp" {
+  name     = var.name_env
+  location = local.location
 }
 
 resource "azurerm_virtual_network" "app_network" {
   name                = "${var.app_network_var}${var.name_env}"
   location            = local.location
   resource_group_name = azurerm_resource_group.app_grp.name
-  address_space       = ["10.0.0.0/16"]  
+  address_space       = ["10.0.0.0/16"]
   depends_on = [
     azurerm_resource_group.app_grp
   ]
@@ -50,7 +50,7 @@ resource "azurerm_network_interface" "app_interface1" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.SubnetA.id
-    private_ip_address_allocation = "Dynamic"    
+    private_ip_address_allocation = "Dynamic"
   }
 
   depends_on = [
@@ -68,7 +68,7 @@ resource "azurerm_network_interface" "app_interface2" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.SubnetA.id
-    private_ip_address_allocation = "Dynamic"    
+    private_ip_address_allocation = "Dynamic"
   }
 
   depends_on = [
@@ -141,11 +141,11 @@ resource "azurerm_windows_virtual_machine" "app_vm2" {
 
 
 resource "azurerm_availability_set" "app_set" {
-  name                = "${var.app_set_var}${var.name_env}"
-  location            = azurerm_resource_group.app_grp.location
-  resource_group_name = azurerm_resource_group.app_grp.name
-  platform_fault_domain_count = 3
-  platform_update_domain_count = 3  
+  name                         = "${var.app_set_var}${var.name_env}"
+  location                     = azurerm_resource_group.app_grp.location
+  resource_group_name          = azurerm_resource_group.app_grp.name
+  platform_fault_domain_count  = 3
+  platform_update_domain_count = 3
   depends_on = [
     azurerm_resource_group.app_grp
   ]
@@ -164,9 +164,9 @@ resource "azurerm_storage_container" "data" {
   name                  = "data"
   storage_account_name  = "storageaccountsevran"
   container_access_type = "blob"
-  depends_on=[
+  depends_on = [
     azurerm_storage_account.appstore
-    ]
+  ]
 }
 
 # Here we are uploading our IIS Configuration script as a blob
@@ -178,7 +178,7 @@ resource "azurerm_storage_blob" "IIS_config" {
   storage_container_name = "data"
   type                   = "Block"
   source                 = "IIS_Config.ps1"
-   depends_on=[azurerm_storage_container.data]
+  depends_on             = [azurerm_storage_container.data]
 }
 
 // This is the extension for appvm1
@@ -223,7 +223,7 @@ resource "azurerm_network_security_group" "app_nsg" {
   location            = azurerm_resource_group.app_grp.location
   resource_group_name = azurerm_resource_group.app_grp.name
 
-# We are creating a rule to allow traffic on port 80
+  # We are creating a rule to allow traffic on port 80
   security_rule {
     name                       = "Allow_HTTP"
     priority                   = 200
@@ -252,21 +252,21 @@ resource "azurerm_public_ip" "load_ip" {
   location            = azurerm_resource_group.app_grp.location
   resource_group_name = azurerm_resource_group.app_grp.name
   allocation_method   = "Static"
-  sku="Standard"
+  sku                 = "Standard"
 }
 
 resource "azurerm_lb" "app_balancer" {
   name                = "${var.app_balancer_var}${var.name_env}"
   location            = azurerm_resource_group.app_grp.location
   resource_group_name = azurerm_resource_group.app_grp.name
-  sku="Standard"
-  sku_tier = "Regional"
+  sku                 = "Standard"
+  sku_tier            = "Regional"
   frontend_ip_configuration {
     name                 = "frontend-ip"
     public_ip_address_id = azurerm_public_ip.load_ip.id
   }
 
-  depends_on=[
+  depends_on = [
     azurerm_public_ip.load_ip
   ]
 }
@@ -275,7 +275,7 @@ resource "azurerm_lb" "app_balancer" {
 resource "azurerm_lb_backend_address_pool" "PoolA" {
   loadbalancer_id = azurerm_lb.app_balancer.id
   name            = "${var.PoolA_var}${var.name_env}"
-  depends_on=[
+  depends_on = [
     azurerm_lb.app_balancer
   ]
 }
@@ -285,7 +285,7 @@ resource "azurerm_lb_backend_address_pool_address" "appvm1_address" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.PoolA.id
   virtual_network_id      = azurerm_virtual_network.app_network.id
   ip_address              = azurerm_network_interface.app_interface1.private_ip_address
-  depends_on=[
+  depends_on = [
     azurerm_lb_backend_address_pool.PoolA
   ]
 }
@@ -295,7 +295,7 @@ resource "azurerm_lb_backend_address_pool_address" "appvm2_address" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.PoolA.id
   virtual_network_id      = azurerm_virtual_network.app_network.id
   ip_address              = azurerm_network_interface.app_interface2.private_ip_address
-  depends_on=[
+  depends_on = [
     azurerm_lb_backend_address_pool.PoolA
   ]
 }
@@ -307,8 +307,8 @@ resource "azurerm_lb_probe" "ProbeA" {
   loadbalancer_id     = azurerm_lb.app_balancer.id
   name                = "${var.ProbeA_var}${var.name_env}"
   port                = 80
-  protocol            =  "Tcp"
-  depends_on=[
+  protocol            = "Tcp"
+  depends_on = [
     azurerm_lb.app_balancer
   ]
 }
@@ -322,8 +322,8 @@ resource "azurerm_lb_rule" "RuleA" {
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "frontend-ip"
-  backend_address_pool_ids = [ azurerm_lb_backend_address_pool.PoolA.id ]
-  depends_on=[
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.PoolA.id]
+  depends_on = [
     azurerm_lb.app_balancer
   ]
 }

@@ -1,5 +1,5 @@
 variable "name_env" {
-  type = string
+  type    = string
   default = "rg"
 }
 
