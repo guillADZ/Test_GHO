@@ -152,7 +152,7 @@ resource "azurerm_availability_set" "app_set" {
 }
 
 resource "azurerm_storage_account" "appstore" {
-  name                     = "storageaccountsevran"
+  name                     = "storageaccountsevran${var.name_env}"
   resource_group_name      = azurerm_resource_group.app_grp.name
   location                 = azurerm_resource_group.app_grp.location
   account_tier             = "Standard"
@@ -162,7 +162,7 @@ resource "azurerm_storage_account" "appstore" {
 
 resource "azurerm_storage_container" "data" {
   name                  = "data"
-  storage_account_name  = "storageaccountsevran"
+  storage_account_name  = "storageaccountsevran${var.name_env}"
   container_access_type = "blob"
   depends_on = [
     azurerm_storage_account.appstore
@@ -174,7 +174,7 @@ resource "azurerm_storage_container" "data" {
 
 resource "azurerm_storage_blob" "IIS_config" {
   name                   = "IIS_Config.ps1"
-  storage_account_name   = "storageaccountsevran"
+  storage_account_name   = "storageaccountsevran${var.name_env}"
   storage_container_name = "data"
   type                   = "Block"
   source                 = "IIS_Config.ps1"
