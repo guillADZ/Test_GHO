@@ -1,6 +1,6 @@
 variable "name_env" {
-  type    = string
-  default     = "vm_dev"
+    default = "rg_dev"
+
 }
 
 variable "app_network_var" {
